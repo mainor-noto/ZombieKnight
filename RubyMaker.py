@@ -9,29 +9,43 @@ class RubyMaker(pygame.sprite.Sprite):
         super().__init__()
 
         #Animation frames
-        #TODO: create a self.ruby_sprites variables and assign an empty list to it.  HINT:  []
+        self.ruby_sprites = []
 
         #Rotating
         self.ruby_sprites.append(
             pygame.transform.scale(pygame.image.load("./assets/images/ruby/tile000.png"), (64, 64)))
-        #TODO: so we've just added an image to our list of ruby_sprites.  repeate the previous line form tile's 001 to 006
+        self.ruby_sprites.append(
+            pygame.transform.scale(pygame.image.load("./assets/images/ruby/tile001.png"), (64, 64)))
+        self.ruby_sprites.append(
+            pygame.transform.scale(pygame.image.load("./assets/images/ruby/tile002.png"), (64, 64)))
+        self.ruby_sprites.append(
+            pygame.transform.scale(pygame.image.load("./assets/images/ruby/tile003.png"), (64, 64)))
+        self.ruby_sprites.append(
+            pygame.transform.scale(pygame.image.load("./assets/images/ruby/tile004.png"), (64, 64)))
+        self.ruby_sprites.append(
+            pygame.transform.scale(pygame.image.load("./assets/images/ruby/tile005.png"), (64, 64)))
+        self.ruby_sprites.append(
+            pygame.transform.scale(pygame.image.load("./assets/images/ruby/tile006.png"), (64, 64)))
 
         #Load image and get rect
-        #TODO: assign 0 to self.current_sprite.  HINT:  When I say assign y to x I mean x = y
-        #TODO: assign self.ruby_sprites[self.current_sprite] to self.image
-        #TODO: assign self.image.get_rect() to self.image
-        #TODO: assign (x, y) to self.rect.bottomleft
+
+        self.current_sprite = 0
+        self.image = self.ruby_sprites[self.current_sprite]
+        self.image = self.image.get_rect()
+        self.rect.bottomleft(x, y)
 
         #Add to the main group for drawing purposes
-        #TODO: call main_group's add() method passing self
+        main_group.add(self)
 
     def update(self):
         """Update the ruby maker"""
-        #TODO: call self.animate() passing in self.ruby_sprites and 0.25 into the function
+        self.animate(self.ruby_sprites, 0.25)
 
     def animate(self, sprite_list, speed):
         """Animate the ruby maker"""
-        #TODO: check if self.current_sprite is less than len(sprite_list) - 1.  If so add speed to self.current_sprite
-        #TODO: else assign 0 to self.current_sprite
+        if self.current_sprite < len(sprite_list) - 1:
+            self.current_sprite + speed
+        else: self.current_sprite = 0
 
-        #TODO: assign sprite_list[int(self.current_sprite)] to self.image.  When I say assign y to x I mean x = y
+
+        self.image = sprite_list[int(self.current_sprite)]

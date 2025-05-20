@@ -155,24 +155,22 @@ class Game:
                 # Player
                 elif self.tile_map[row][col] == 9:
                     self.my_player = Player(col * 32 - 32, row * 32 + 32)
-                    #TODO: assign to self.my_player the Player() constructor passing col * 32 - 32, row * 32 + 32,
                     self.player_group, self.portal_group, self.bullet_group
                     # self.platform_group, self.portal_group, self.bullet_group,
                     self.WINDOW_WIDTH, self.WINDOW_HEIGHT
                     # self.WINDOW_WIDTH, self.WINDOW_HEIGHT
-                    # TODO: call self.player_group's add function and pass in self.my_player
                     self.player_group.add(self.my_player)
 
         # Load in a background image (we must resize)
-        # TODO: assign pygame.transform.scale(pygame.image.load("./assets/images/background.png"), (1280, 736))
+        pygame.transform.scale(pygame.image.load("./assets/images/background.png"), (1280, 736))
         # to self.background_image
-        # TODO: assign self.background_image.get_rect() to self.background_rect
-        # TODO: assign (0, 0) to self.background_rect.topleft
+        self.background_rect = self.background_image.get_rect()
+        self.background_rect.topleft = (0,0)
 
-        # TODO: call self.pause_game() passing in "Zombie Knight", "Press 'Enter' to Begin"
-        # TODO: call pygame.mixer.music.play() passing in -1, and 0.0
+        self.pause_game("Zombie Knight", "Press 'Enter' to Begin")
+        pygame.mixer.music.play(-1, 0.0)
 
-        # TODO: call self.game_loop()
+        self.game_loop()
 
     def game_loop(self):
         # The main game loop
@@ -191,48 +189,49 @@ class Game:
                         self.my_player.fire()
 
             # Blit the background
-            # TODO: call Game.display_surface.blit() passing in self.background_image, self.background_rect
+            Game.display_surface.blit(self.background_image, self.background_rect)
 
             # Draw tiles and update ruby maker
-            # TODO: call self.main_tile_group.update()
-            # TODO: call self.main_tile_group.draw() passing in Game.display_surface
+            self.main_title_group.update()
+            self.main_tile_group.draw(Game.display_surface)
 
             # Update and draw sprite groups
-            # TODO: call self.portal_group.update()
-            # TODO: call self.portal_group.draw() passing in Game.display_surface
+            self.portal_group.update()
+            self.portal_group.draw(Game.display_surface)
 
-            # TODO: call self.player_group.update()
-            # TODO: call self.player_group.draw() passing in Game.display_surface
+            self.player_group.update()
+            self.player_group.draw(Game.display_surface)
 
-            # TODO: call self.bullet_group.update()
-            # TODO: call self.bullet_group.draw() passing in Game.display_surface
+            self.bullet_group.update()
+            self.bullet_group.draw(Game.display_surface)
 
-            # TODO: call self.zombie_group.update()
-            # TODO: call self.zombie_group.draw() passing in Game.display_surface
+            self.zombie_group.update()
+            self.zombie_group.draw(Game.display_surface)
 
-            # TODO: call self.ruby_group.update()
-            # TODO: call self.ruby_group.draw() passing in Game.display_surface
+            self.ruby_group.update()
+            self.ruby_group.draw(Game.display_surface)
 
             # Update and draw the game
-            # TODO: call self.update()
-            # TODO: call self.draw()
+            self.update()
+            self.draw()
 
             # Update the display and tick the clock
-            # TODO: call pygame.display.update()
-            # TODO: call Game.clock.tick() passing in Game.FPS
+            pygame.display.update()
+            Game.clock.tick(Game.FPS)
 
     def update(self):
         """Update the game"""
         # Update the round time every second
-        # TODO: add 1 to self.frame_count
-        # TODO: if self.frame_count % Game.FPS is 0
-        # TODO: (1) subtract 1 from self.round_time
-        # TODO: (2) set self.frame_count to 0
+        self.frame_count + 1
+        if self.frame_count % Game.FPS is 0:
+            self.round_time - 1
+            self.frame_count = 0
 
-        # TODO: call self.check_collisions()
-        # TODO: call self.add_zombie()
-        # TODO: call self.check_round_completion()
-        # TODO: call self.game_over()
+        self.check_collisions()
+        self.add_zombie()
+        self.check_round_completion()
+        self.game_over()
+
 
     def draw(self):
         """Draw the game HUD"""
@@ -269,11 +268,10 @@ class Game:
     def add_zombie(self):
         """Add a zombie to the game"""
         # Check to add a zombie every second
-        # TODO: if self.frame_count % Game.FPS is 0 then
-        # TODO: (1) check if self.round_time % self.zombie_creation_time is 0
-        # TODO: (1-1) assign to zombie the Zombie() constructor passing in self.platform_group, self.portal_group, self.round_number
-        # 5 + self.round_number, self.WINDOW_WIDTH, self.WINDOW_HEIGHT, and self.FPS
-        # TODO: (1-2): call self.zombie_group's add method and pass in zombie
+        if self.frame_count % Game.FPS is 0:
+            if self.round_time % self.zombie_creation_time is 0:
+                zombie = Zombie(self.platform_group, self.portal_group, self.round_number, 5 + self.round_number, self.WINDOW_WIDTH, self.WINDOW_HEIGHT, self.FPS )
+                self.zombie.group.add(zombie)
 
     def check_collisions(self):
         """Check collisions that affect gameplay"""
@@ -325,79 +323,91 @@ class Game:
 
     def check_round_completion(self):
         """Check if the player survived a single night."""
-        # TODO: if self.round_time is 0 then call self.start_new_round()
+        if self.round_time is 0:
+            self.start_new_round()
 
     def check_game_over(self):
         """Check to see if the player lost the game"""
-        # TODO: if the self.my_player.health is less than or equal to 0 then do the following
-        # (1): call pygame.mixer.music.stop()
-        # (2): call self.pause_game() passing in "Game Over! Final Score: " + str(self.score), "Press 'Enter' to play again..."
-        # (3): call self.reset_game()
+        if self.my_player <= 0:
+            pygame.mixer.music.stop()
+            self.pause_game("Game Over! Final Score: " + str(self.score), "Press 'Enter' to play again...")
+            self.reset_game()
 
     def start_new_round(self):
         """Start a new night"""
-        # TODO: add 1 to self.round_number
+        self.round_number + 1
 
         # Decrease zombie creation time...more zombies
-        # TODO: check if self.round_number is less than self.STARTING_ZOMBIE_CREATION_TIME.  subtract 1 from self.zombie_creation_time
+        if self.round_number < self.STARTING_ZOMBIE_CREATION_TIME:
+            self.zombie_creation_time -= 1
 
         # Reset round values
-        # TODO: assign self.STARTING_ROUND_TIME to self.round_time
+        self.round_time = self.STARTING_ROUND_TIME
 
-        # TODO: call empty() on the following self groups
+        self.zombie_group.empty()
+        self.ruby_group.empty()
+        self.bullet_group.empty()
         # zombie_group, ruby_group, bullet_group
 
-        # TODO: call self.my_player.reset()
+        self.my_player.reset()
 
-        # TODO: call self.pause_game() passing in "You survived the night!", "Press 'Enter' to continue..."
+        self.pause_game("You survived the night!", "Press 'Enter' to continue...")
 
     def pause_game(self, main_text, sub_text):
         """Pause the game"""
-        # TODO: call pygame.mixer.music.pause()
+        pygame.mixer.music.pause()
 
         # Create main pause text
-        # TODO: assign self.title_font.render() passing in main_text, True, and Game.GREEN to main_text
-        # TODO: assign main_text.get_rect() to main_rect
-        # TODO: assign (Game.WINDOW_WIDTH // 2, Game.WINDOW_HEIGHT // 2) to main_rect.center
+        self.title_font.render(main_text, True, Game.GREEN)
+        main_rect = main_text.get_rect()
+        main_rect.center = (Game.WINDOW_WIDTH // 2, Game.WINDOW_HEIGHT // 2)
 
         #Create sub pause text
-        # TODO: assign self.title_font.render() passing in sub_text, True, and Game.WHITE to sub_text
-        # TODO: assign sub_text.get_rect() to sub_rect
-        # TODO: assign (Game.WINDOW_WIDTH // 2, Game.WINDOW_HEIGHT // 2 + 64) to sub_rect.center
+        self.title_font.render(sub_text, True, Game.WHITE)
+        sub_rect = sub_text.get_rect()
+        sub_rect.center = (Game.WINDOW_WIDTH // 2, Game.WINDOW_HEIGHT // 2 + 64)
 
         # Display the pause text
-        # TODO: call Game.display_surface.fill() passing in Game.BLACK
-        # TODO: call Game.display_surface.blit() passing in main_text, and main_rect
-        # TODO: call Game.display_surface.blit() passing in sub_text, and sub_rect
-        # TODO: call pygame.display.update()
+
+        Game.display_surface.fill(Game.BLACK)
+        Game.display_surface.blit(main_text, main_rect)
+        Game.display_surface.blit(sub_text, sub_rect)
+        pygame.display.update()
+
 
         # Pause the game until user hits enter or quits
-        # TODO: assign True to is_paused
-        # TODO: while is_paused
-        # TODO: (1): for each event in pygame.event.get()
-        # TODO: (1-1): check if the event.type is pygame.KEYDOWN
-        # TODO: (1-1-1): check if event.key is pygame.K_RETURN
-        # TODO: (1-1-1-1): assign False to is_paused
-        # TODO: (1-1-1-2): call pygame.mixer.music.unpause()
-        # TODO: (1-2): check if event.type is pygame.QUIT
-        # TODO: (1-2-1): assign False to is_paused
-        # TODO: (1-2-2): assign False to self.running
-        # TODO: (1-2-3): call pygame.mixer.music.stop()
+
+        is_paused = True
+        while is_paused:
+            for event in pygame.event.get():
+                if event.type is pygame.KEYDOWN or event.type is pygame.K_RETRUN:
+                    is_paused = False
+                    pygame.mixer.music.unpause()
+                    if event.type == pygame.QUIT:
+                        Is_paused = False
+                        self.running = False
+                        pygame.mixer.music.stop()
+
 
 
     def reset_game(self):
         """Reset the game"""
         # Reset game values
-        # TODO: assign the following to these self variables
         # 0 to score, 1 to round_number, self.STARTING_ROUND_TIME to round_time
         # self.STARTING_ZOMBIE_CREATION_TIME to zombie_creation_time,
+        score = 0
+        round_number = 1
+        round_time = self.STARTING_ROUND_TIME
+        zombie_creation_time = self.STARTING_ZOMBIE_CREATION_TIME
 
         # Reset the player
-        # TODO: assign self.my_player.STARTING_HEALTH to self.my_player.health
-        # TODO: call self.my_player.reset()
+        self.my_player.health = self.my_player.STARTING_HEALTH
+        self.my_player.reset()
 
         # Empty sprite groups
-        #TODO: call .empty() on the following sprite groups
-        # zombie_group, ruby_group, bullet_group
 
-        # TODO: call pygame.mixer.music.play() passing in -1, and 0.0
+        self.zombie_group.empty()
+        self.ruby_group.empty()
+        self.bullet_group.empty()
+
+        pygame.mixer.music.play(-1, 0.0)
